@@ -30,5 +30,5 @@ def start(self):
 
     self.market_trading_pair_tuples = [market_info_1, market_info_2, market_info_3]
     self.strategy = AmmArbStrategy([market_info_1, market_info_2, market_info_3], min_profitability, order_amount,
-                                   market_1_slippage_buffer, market_2_slippage_buffer, market_3_slippage_buffer,
+                                   [market_1_slippage_buffer, market_2_slippage_buffer, market_3_slippage_buffer],
                                    concurrent_orders_submission)

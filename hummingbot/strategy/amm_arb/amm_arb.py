@@ -41,21 +41,17 @@ class AmmArbStrategy(StrategyPyBase):
                  markets_info: List[MarketTradingPairTuple],
                  min_profitability: Decimal,
                  order_amount: Decimal,
-                 market_1_slippage_buffer: Decimal = Decimal("0"),
-                 market_2_slippage_buffer: Decimal = Decimal("0"),
-                 market_3_slippage_buffer: Decimal = Decimal("0"),
+                 markets_slippage_buffer: List[Decimal],
                  concurrent_orders_submission: bool = True,
                  status_report_interval: float = 900):
         """
-        :param market_info_1: The first market
-        :param market_info_2: The second market
+        :param markets_info: The markets informations
         :param min_profitability: The minimum profitability for execute trades (e.g. 0.0003 for 0.3%)
         :param order_amount: The order amount
-        :param market_1_slippage_buffer: The buffer for which to adjust order price for higher chance of
+        :param markets_slippage_buffer: The buffers for which to adjust order price for higher chance of
         the order getting filled. This is quite important for AMM which transaction takes a long time where a slippage
         is acceptable rather having the transaction get rejected. The submitted order price will be adjust higher
-        for buy order and lower for sell order.
-        :param market_1_slippage_buffer: The slipper buffer for market_2
+        for buy order and lower for sell order. Same order as the associated markets.
         :param concurrent_orders_submission: whether to submit both arbitrage taker orders (buy and sell) simultaneously
         If false, the bot will wait for first exchange order filled before submitting the other order.
         """
@@ -64,12 +60,7 @@ class AmmArbStrategy(StrategyPyBase):
         self._markets = [m.market for m in markets_info]
         self._min_profitability = min_profitability
         self._order_amount = order_amount
-        self._market_1_slippage_buffer = market_1_slippage_buffer
-        self._market_2_slippage_buffer = market_2_slippage_buffer
-        self._market_3_slippage_buffer = market_3_slippage_buffer
-        self._market_slippage_buffers_dict = {self._markets[0]: market_1_slippage_buffer,
-                                              self._markets[1]: market_2_slippage_buffer,
-                                              self._markets[2]: market_3_slippage_buffer}
+        self._market_slippage_buffers_dict = {market: buffer for (market, buffer) in zip(self._markets, markets_slippage_buffer)}
         self._concurrent_orders_submission = concurrent_orders_submission
         self._last_no_arb_reported = 0
         self._arb_proposals = None
