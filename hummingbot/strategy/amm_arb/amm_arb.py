@@ -39,8 +39,6 @@ class AmmArbStrategy(StrategyPyBase):
 
     def __init__(self,
                  markets_info: List[MarketTradingPairTuple],
-                 market_info_2: MarketTradingPairTuple,
-                 market_info_3: MarketTradingPairTuple,
                  min_profitability: Decimal,
                  order_amount: Decimal,
                  market_1_slippage_buffer: Decimal = Decimal("0"),
@@ -88,7 +86,7 @@ class AmmArbStrategy(StrategyPyBase):
         self.add_markets(self._markets)
         self._uniswap = None
         self._quote_eth_rate_fetch_loop_task = None
-        self._quote_eth_rates = None
+        self._quote_eth_rates = {}
 
     @property
     def min_profitability(self) -> Decimal:
