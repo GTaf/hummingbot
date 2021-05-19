@@ -1,14 +1,10 @@
 from hummingbot.client.config.config_var import ConfigVar
 from hummingbot.client.config.config_validators import (
-    validate_market_trading_pair,
-    validate_connector,
     validate_decimal,
     validate_bool
 )
 from hummingbot.client.settings import (
     required_exchanges,
-    requried_connector_trading_pairs,
-    EXAMPLE_PAIRS,
 )
 from decimal import Decimal
 
@@ -17,101 +13,22 @@ def exchange_on_validated(value: str) -> None:
     required_exchanges.append(value)
 
 
-def market_1_validator(value: str) -> None:
-    exchange = amm_arb_config_map["connector_1"].value
-    return validate_market_trading_pair(exchange, value)
-
-
-def market_1_on_validated(value: str) -> None:
-    requried_connector_trading_pairs[amm_arb_config_map["connector_1"].value] = [value]
-
-
-def market_2_validator(value: str) -> None:
-    exchange = amm_arb_config_map["connector_2"].value
-    return validate_market_trading_pair(exchange, value)
-
-
-def market_2_on_validated(value: str) -> None:
-    requried_connector_trading_pairs[amm_arb_config_map["connector_2"].value] = [value]
-
-
-def market_3_validator(value: str) -> None:
-    exchange = amm_arb_config_map["connector_3"].value
-    return validate_market_trading_pair(exchange, value)
-
-
-def market_3_on_validated(value: str) -> None:
-    requried_connector_trading_pairs[amm_arb_config_map["connector_3"].value] = [value]
-
-
-def market_1_prompt() -> str:
-    connector = amm_arb_config_map.get("connector_1").value
-    example = EXAMPLE_PAIRS.get(connector)
-    return "Enter the token trading pair you would like to trade on %s%s >>> " \
-           % (connector, f" (e.g. {example})" if example else "")
-
-
-def market_2_prompt() -> str:
-    connector = amm_arb_config_map.get("connector_2").value
-    example = EXAMPLE_PAIRS.get(connector)
-    return "Enter the token trading pair you would like to trade on %s%s >>> " \
-           % (connector, f" (e.g. {example})" if example else "")
-
-
-def market_3_prompt() -> str:
-    connector = amm_arb_config_map.get("connector_3").value
-    example = EXAMPLE_PAIRS.get(connector)
-    return "Enter the token trading pair you would like to trade on %s%s >>> " \
-           % (connector, f" (e.g. {example})" if example else "")
-
-
 def order_amount_prompt() -> str:
-    trading_pair = amm_arb_config_map["market_1"].value
+    trading_pair = amm_arb_config_map["market_list"].value[0][1]
     base_asset, quote_asset = trading_pair.split("-")
     return f"What is the amount of {base_asset} per order? >>> "
 
 
+# TODO change template.yaml dans hummingbot/templates
 amm_arb_config_map = {
     "strategy": ConfigVar(
         key="strategy",
         prompt="",
         default="amm_arb"),
-    "connector_1": ConfigVar(
-        key="connector_1",
-        prompt="Enter your first spot connector (Exchange/AMM) >>> ",
-        prompt_on_new=True,
-        validator=validate_connector,
-        on_validated=exchange_on_validated),
-    "market_1": ConfigVar(
-        key="market_1",
-        prompt=market_1_prompt,
-        prompt_on_new=True,
-        validator=market_1_validator,
-        on_validated=market_1_on_validated),
-    "connector_2": ConfigVar(
-        key="connector_2",
-        prompt="Enter your second spot connector (Exchange/AMM) >>> ",
-        prompt_on_new=True,
-        validator=validate_connector,
-        on_validated=exchange_on_validated),
-    "market_2": ConfigVar(
-        key="market_2",
-        prompt=market_2_prompt,
-        prompt_on_new=True,
-        validator=market_2_validator,
-        on_validated=market_2_on_validated),
-    "connector_3": ConfigVar(
-        key="connector_3",
-        prompt="Enter your third spot connector (Exchange/AMM) >>> ",
-        prompt_on_new=True,
-        validator=validate_connector,
-        on_validated=exchange_on_validated),
-    "market_3": ConfigVar(
-        key="market_3",
-        prompt=market_3_prompt,
-        prompt_on_new=True,
-        validator=market_3_validator,
-        on_validated=market_3_on_validated),
+    "market_list": ConfigVar(
+        key="market_list",
+        prompt="",
+        prompt_on_new=True),
     "order_amount": ConfigVar(
         key="order_amount",
         prompt=order_amount_prompt,

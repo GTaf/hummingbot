@@ -5,12 +5,7 @@ from hummingbot.strategy.amm_arb.amm_arb_config_map import amm_arb_config_map
 
 
 def start(self):
-    connector_1 = amm_arb_config_map.get("connector_1").value.lower()
-    market_1 = amm_arb_config_map.get("market_1").value
-    connector_2 = amm_arb_config_map.get("connector_2").value.lower()
-    market_2 = amm_arb_config_map.get("market_2").value
-    connector_3 = amm_arb_config_map.get("connector_3").value.lower()
-    market_3 = amm_arb_config_map.get("market_3").value
+    market_tuples = amm_arb_config_map.get("market_list").value
     order_amount = amm_arb_config_map.get("order_amount").value
     min_profitability = amm_arb_config_map.get("min_profitability").value / Decimal("100")
     market_1_slippage_buffer = amm_arb_config_map.get("market_1_slippage_buffer").value / Decimal("100")
@@ -18,17 +13,14 @@ def start(self):
     market_3_slippage_buffer = amm_arb_config_map.get("market_3_slippage_buffer").value / Decimal("100")
     concurrent_orders_submission = amm_arb_config_map.get("concurrent_orders_submission").value
 
-    self._initialize_markets([(connector_1, [market_1]), (connector_2, [market_2]), (connector_3, [market_3])])
-    base_1, quote_1 = market_1.split("-")
-    base_2, quote_2 = market_2.split("-")
-    base_3, quote_3 = market_3.split("-")
-    self.assets = set([base_1, quote_1, base_2, quote_2, base_3, quote_3])
+    self._initialize_markets([(connector.lower(), [market]) for (connector, market) in market_tuples])
+    bases = [market.split("-")[0] for (_, market) in market_tuples]
+    quotes = [market.split("-")[1] for (_, market) in market_tuples]
+    self.assets = set(bases + quotes)
 
-    market_info_1 = MarketTradingPairTuple(self.markets[connector_1], market_1, base_1, quote_1)
-    market_info_2 = MarketTradingPairTuple(self.markets[connector_2], market_2, base_2, quote_2)
-    market_info_3 = MarketTradingPairTuple(self.markets[connector_3], market_3, base_3, quote_3)
+    markets_info = [MarketTradingPairTuple(self.markets[connector.lower()], market, base, quote) for ((connector, market), base, quote) in zip(market_tuples, bases, quotes)]
 
-    self.market_trading_pair_tuples = [market_info_1, market_info_2, market_info_3]
-    self.strategy = AmmArbStrategy([market_info_1, market_info_2, market_info_3], min_profitability, order_amount,
+    self.market_trading_pair_tuples = markets_info
+    self.strategy = AmmArbStrategy(markets_info, min_profitability, order_amount,
                                    [market_1_slippage_buffer, market_2_slippage_buffer, market_3_slippage_buffer],
                                    concurrent_orders_submission)
