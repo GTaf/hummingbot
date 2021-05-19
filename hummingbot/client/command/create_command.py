@@ -185,7 +185,7 @@ class CreateCommand:
                 validator=lambda value: validate_market_trading_pair(connector, value),
                 on_validated=lambda value: market_on_validated(value, connector))
             await self.prompt_a_config(market_config)
-            mainConfig.value.append((connector, market_config.value))  # TODO : use this config in amm_arb_config_map, with market_list key
+            mainConfig.value.append((connector, market_config.value))
 
 
 def market_on_validated(value: str, connector) -> None:
