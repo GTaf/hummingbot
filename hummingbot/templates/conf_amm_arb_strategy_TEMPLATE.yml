@@ -25,6 +25,7 @@ market_1_slippage_buffer: null
 # A buffer to add to the price to account for slippage when buying/selling on second connector market
 # (Enter 1 for 1%)
 market_2_slippage_buffer: null
+market_3_slippage_buffer: null
 
 # A flag (true/false), if true the bot submits both arbitrage taker orders (buy and sell) simultaneously
 # If false, the bot will wait for first exchange order filled before submitting the other order

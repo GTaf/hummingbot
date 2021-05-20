@@ -19,7 +19,6 @@ def order_amount_prompt() -> str:
     return f"What is the amount of {base_asset} per order? >>> "
 
 
-# TODO change template.yaml dans hummingbot/templates
 amm_arb_config_map = {
     "strategy": ConfigVar(
         key="strategy",
