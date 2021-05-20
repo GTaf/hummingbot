@@ -39,5 +39,5 @@ async def create_arb_proposals(markets_info: List[MarketTradingPairTuple],
                     m_2_o_price,
                     order_amount
                 )
-            results.append(ArbProposal(first_side, second_side))
+                results.append(ArbProposal(first_side, second_side))
     return results

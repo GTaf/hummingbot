@@ -125,13 +125,15 @@ class AmmArbStrategy(StrategyPyBase):
                 first_side_quote_eth_rate=self._quote_eth_rates[t.first_side.market_info.market],
                 second_side_quote_eth_rate=self._quote_eth_rates[t.second_side.market_info.market]
             ) >= self._min_profitability
-        ]  # TODO, add option to use only the most profitable one, use by default
+        ]
         if len(arb_proposals) == 0:
             if self._last_no_arb_reported < self.current_timestamp - 20.:
                 self.logger().info("No arbitrage opportunity.\n" +
                                    "\n".join(self.short_proposal_msg(self._arb_proposals, False)))
                 self._last_no_arb_reported = self.current_timestamp
             return
+        for prop in arb_proposals:
+            self.logger().info(prop.first_side.market_info, prop.second_side.market_info)
         self.apply_slippage_buffers(arb_proposals)
         self.apply_budget_constraint(arb_proposals)
         await self.execute_arb_proposals(arb_proposals)
