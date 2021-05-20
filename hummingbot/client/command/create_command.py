@@ -21,11 +21,13 @@ from hummingbot.client.settings import (
 from hummingbot.client.config.global_config_map import global_config_map
 from hummingbot.client.config.security import Security
 from hummingbot.client.config.config_validators import (
+    validate_decimal,
     validate_int,
     validate_market_trading_pair,
     validate_connector,
     validate_strategy
 )
+from decimal import Decimal
 
 from hummingbot.client.ui.completer import load_completer
 from typing import TYPE_CHECKING
@@ -185,7 +187,16 @@ class CreateCommand:
                 validator=lambda value: validate_market_trading_pair(connector, value),
                 on_validated=lambda value: market_on_validated(value, connector))
             await self.prompt_a_config(market_config)
-            mainConfig.value.append((connector, market_config.value))
+            slippage_buffer_config = ConfigVar(
+                key="market_1_slippage_buffer",
+                prompt="How much buffer do you want to add to the price to account for slippage for orders on this market "
+                    "(Enter 1 for 1%)? >>> ",
+                prompt_on_new=True,
+                default=Decimal("0.05"),
+                validator=lambda v: validate_decimal(v),
+                type_str="decimal")
+            await self.prompt_a_config(slippage_buffer_config)
+            mainConfig.value.append((connector, market_config.value, slippage_buffer_config.value))
 
 
 def market_on_validated(value: str, connector) -> None:
